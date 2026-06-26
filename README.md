@@ -58,7 +58,29 @@ docker-compose
 
 2 directories, 12 files
 ```  
-меняем название чарта, сервис grafana-service.yml  
+меняем название чарта compose -> promgra в файле Chart.yml и переименовываем папку тем же именем.  
+уточняем манифест сервиса grafana-service.yml  
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert --chart
+    kompose.version: 1.38.0 (a8f5d1cbd)
+  labels:
+    io.kompose.service: grafana
+  name: grafana
+spec:
+  type: LoadBalancer    # задаем тип нагрузки 
+  ports:
+    - name: "3000"
+      port: 3000
+      targetPort: 3000
+  externalIPs:
+    - 192.168.11.133 # реальный IP адрес
+  selector:
+    io.kompose.service: grafana
+```
 упаковываем чарт promgra из каталога репозитория  
 ```bash
 sysadmin@master:~/labs/08_devops/promgrafana$ helm package promgra
@@ -83,13 +105,14 @@ grafana-9c68799cd-xtnw5       1/1     Running   0          23m
 prometheus-5d6f5c49c5-vgdl9   1/1     Running   0          23m
 ```
 
-Добавляем переменные в helm chart:  
+Добавляем переменные в helm chart - записываем их в файл:  
 ```yaml
+# values.yaml
 EXTERNAL_IP: 192.168.11.133
 EXTERNAL_PORT: 3113
 GF_ADMIN_PASSWORD: HiGrafana
 ```
-helm lint:  
+проверяем линтером helm lint:  
 ```bash
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana/promgra$ helm lint
 ==> Linting .
@@ -97,7 +120,7 @@ andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana/promgra$ helm lint
 
 1 chart(s) linted, 0 chart(s) failed
 ```
-проверяем что helm видит переменные:  
+проверяем что helm видит переменные...  
 ```bash
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana$ helm show values ./promgra/
 EXTERNAL_IP: 192.168.11.133
@@ -107,7 +130,7 @@ GF_ADMIN_PASSWORD: HiGrafana
 и корректно подставляет их в chart:  
 ```bash
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana$ helm template promgra ./promgra/
-# grafana-service.yaml only
+# check grafana-service.yaml only
 ---
 # Source: promgra/templates/grafana-service.yaml
 apiVersion: v1
@@ -129,7 +152,7 @@ spec:
   selector:
     io.kompose.service: grafana
 ```
-изменяем релиз, уточняя порт в в переменной EXTERNAL_PORT:  
+изменяем релиз, указывая нужный порт в в переменной EXTERNAL_PORT как аргумент в командной строке:  
 ```bash
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana/promgra$ helm upgrade promgra ./ --set EXTERNAL_PORT=3489
 Release "promgra" has been upgraded. Happy Helming!
@@ -145,7 +168,7 @@ TEST SUITE: None
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana/promgra$ kubectl get services -n default
 NAME             TYPE           CLUSTER-IP       EXTERNAL-IP      PORT(S)          AGE
 blackbox         ClusterIP      10.101.184.212   <none>           9115/TCP         39m
-grafana          LoadBalancer   10.101.226.156   192.168.11.133   3489:31479/TCP   39m
+grafana          LoadBalancer   10.101.226.156   192.168.11.133   3489:31479/TCP   39m # port=3489
 kubernetes       ClusterIP      10.96.0.1        <none>           443/TCP          13h
 prometheus       ClusterIP      10.106.191.2     <none>           9090/TCP         39m
 redis            ClusterIP      10.98.46.109     <none>           6379/TCP         13h
@@ -167,6 +190,8 @@ uninstall helm chart:
 andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana$ helm uninstall promgra
 release "promgra" uninstalled
 ```
+
+
 
 
 
