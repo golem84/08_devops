@@ -64,6 +64,27 @@ docker-compose
 sysadmin@master:~/labs/08_devops/promgrafana$ helm package promgra
 Successfully packaged chart and saved it to: /home/sysadmin/labs/08_devops/promgrafana/promgra-0.0.1.tgz
 ```
+деплоим нагрузку из helm chart:  
+```bash
+andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana$ helm install promgra promgra-0.0.1.tgz
+NAME: promgra
+LAST DEPLOYED: Fri Jun 26 14:07:45 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+проверяем развернутую нагрузку:  
+```bash
+$ kubectl get pods
+NAME                          READY   STATUS    RESTARTS   AGE
+blackbox-d4d587b7b-vxxkr      1/1     Running   0          17m
+grafana-9c68799cd-xtnw5       1/1     Running   0          23m
+prometheus-5d6f5c49c5-vgdl9   1/1     Running   0          23m
+```
+
+
+
 
 чтобы в linux сделать сервис доступным из minikube снаружи выполнить:  
 `$ minikube service <service-name> -n <namespace>`
