@@ -151,6 +151,23 @@ prometheus       ClusterIP      10.106.191.2     <none>           9090/TCP      
 redis            ClusterIP      10.98.46.109     <none>           6379/TCP         13h
 service-devops   LoadBalancer   10.96.78.208     192.168.11.133   8000:31406/TCP   13h
 ```
+check exported variables:  
+```bash
+andrew@andrew-xubuntulp:~$ helm get values promgra
+USER-SUPPLIED VALUES:
+EXTERNAL_PORT: 3489
+andrew@andrew-xubuntulp:~$ helm get values promgra --all
+COMPUTED VALUES:
+EXTERNAL_IP: 192.168.11.133
+EXTERNAL_PORT: 3489
+GF_ADMIN_PASSWORD: HiGrafana
+```
+
+
+
+
+
+
 
 
 
