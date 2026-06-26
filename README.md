@@ -162,15 +162,18 @@ EXTERNAL_IP: 192.168.11.133
 EXTERNAL_PORT: 3489
 GF_ADMIN_PASSWORD: HiGrafana
 ```
+uninstall helm chart:  
+```bash
+andrew@andrew-xubuntulp:~/projects/08_devops/promgrafana$ helm uninstall promgra
+release "promgra" uninstalled
+```
 
 
 
 
 
 
-
-
-
+**ПРИМЕЧАНИЕ!**  
 чтобы в linux сделать сервис доступным из minikube снаружи выполнить:  
 `$ minikube service <service-name> -n <namespace>`
 
