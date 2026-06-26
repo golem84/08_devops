@@ -10,10 +10,9 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - name: "3000"
-      port: 3000
+    - port: {{ .Values.EXTERNAL_PORT }}
       targetPort: 3000
   externalIPs:
-    - 192.168.11.133
+    - {{ .Values.EXTERNAL_IP }}
   selector:
     io.kompose.service: grafana
